@@ -2,6 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Login from './Login'
 import { useForm } from "react-hook-form"
+import axios from "axios"
+  import toast from 'react-hot-toast'
 
 function Signup() {
 
@@ -12,7 +14,32 @@ function Signup() {
         formState: { errors },
       } = useForm()
     
-      const onSubmit = (data) => console.log(data)
+      const onSubmit = async (data)=>{
+        const userInfo={
+             fullname:data.fullname,
+             email:data.email,
+             password:data.password,
+        }
+
+        await axios.post("http://localhost:4002/user/signUp",userInfo).then((res)=>{
+              console.log(res.data);
+              if(res.data)
+              {
+                toast.success('Signedup successfully !');
+              }
+
+              localStorage.setItem("users",JSON.stringify(res.data))
+        }).catch( (err)=>{
+
+          if(err.response)
+          {
+                 console.log(err);
+                 toast.error(err.response.data.message);
+          }
+          
+        });
+
+      };
   return (
     <>
        <div className='flex h-screen items-center justify-center '>
@@ -31,7 +58,7 @@ function Signup() {
             <input type='text'
             placeholder='enter your full name'
             className='outline-none w-80 rounded-sm  '
-            {...register("name", { required: true })}
+            {...register("fullname", { required: true })}
             ></input>
 
 <br />
@@ -44,7 +71,7 @@ function Signup() {
             <br/>
             <input type='email'
             placeholder='enter your email'
-            className='outline-none w-80 rounded-sm  '
+            className='outline-none w-80 rounded-sm '
             {...register("email", { required: true })}
             ></input>
             <br />
@@ -57,7 +84,7 @@ function Signup() {
             <input type='password'
             placeholder='enter your password'
             className='outline-none w-80 rounded-sm'
-            {...register("email", { required: true })}
+            {...register("password", { required: true })}
             ></input>
 
             <br />
